@@ -14,7 +14,9 @@ const client = new Client({
   user: 'postgres.tuxoockqaksayeeasmib',  // e.g. 'postgres'
   password: 'Redstr900@@',
   database: 'postgres', // e.g. 'postgres'
-    // Ensure SSL is enabled for Supabase connection
+  ssl: {
+    rejectUnauthorized: false  // Allow SSL connections (useful for some managed PostgreSQL servers)
+  },  // Ensure SSL is enabled for Supabase connection
 });
 
 
