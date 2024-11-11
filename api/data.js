@@ -50,10 +50,9 @@ app.post('/data', (req, res) => {
 });
 
 } catch (error) {
-    console.error('Error:', error);
+    console.error('Error:', error); // Log error for debugging
     res.status(500).send('Internal Server Error');
   } finally {
     // Close the database connection
     await client.end();
   }
-}
