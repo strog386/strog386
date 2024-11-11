@@ -17,6 +17,7 @@ const client = new Client({
     // Ensure SSL is enabled for Supabase connection
 });
 
+try{
 client.connect()
   .then(() => console.log('Connected to PostgreSQL'))
   .catch(err => console.error('Connection error', err.stack));
@@ -48,4 +49,11 @@ app.post('/data', (req, res) => {
   });
 });
 
-export default app;
+} catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('Internal Server Error');
+  } finally {
+    // Close the database connection
+    await client.end();
+  }
+}
