@@ -17,7 +17,7 @@ const client = new Client({
     // Ensure SSL is enabled for Supabase connection
 });
 
-try{
+
 client.connect()
   .then(() => console.log('Connected to PostgreSQL'))
   .catch(err => console.error('Connection error', err.stack));
@@ -49,10 +49,15 @@ app.post('/data', (req, res) => {
   });
 });
 
-} catch (error) {
-    console.error('Error:', error); // Log error for debugging
-    res.status(500).send('Internal Server Error');
-  } finally {
-    // Close the database connection
-    await client.end();
+export default async (req, res) => {
+  // Vercel serverless function handler
+  if (req.method === 'POST') {
+    // Use express to handle POST request
+    await new Promise((resolve) => {
+      app(req, res, resolve);  // Call express app as middleware
+    });
+  } else {
+    res.status(405).send('Method Not Allowed');
   }
+};
+
