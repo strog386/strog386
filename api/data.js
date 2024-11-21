@@ -29,10 +29,30 @@ app.post('/data', (req, res) => {
   const { orderNr } = req.body; 
 
   const query = `
-  SELECT public.orp.OrderNr, public.orp.ItemNumber, public.ar.ItemDescription
-  FROM public.orp  
-  JOIN public.ar ON orp.ItemNumber = ar.Item_Number
-  WHERE orp.OrderNr = $1
+  SELECT 
+  public.orp.OrderNr, 
+  public.orp.ItemNumber, 
+  public.ar.ItemDescription, 
+  public.ar.SmallText, 
+  public.ar.PickAreaNr, 
+  public.gatx.PickAreaName, 
+  public.oh.PlantDate
+FROM 
+  public.orp  
+JOIN 
+  public.ar 
+ON 
+  orp.ItemNumber = ar.Item_Number
+JOIN 
+  public.gatx 
+ON 
+  ar.PickAreaNr = gatx.PickAreaNr
+JOIN 
+  public.oh 
+ON 
+  orp.OrderNr = oh.OrderNr
+WHERE 
+  orp.OrderNr = $1;
 `;
 
 
@@ -42,9 +62,13 @@ app.post('/data', (req, res) => {
       res.status(500).send('Error fetching data');
     } else {
       const data = result.rows.map(row => ({
-        OrderNr: row.ordernr ? row.ordernr.toString() : '', 
-        ItemNumber: row.itemnumber ? row.itemnumber.toString() : '', 
-        ItemDescription: row.itemdescription ? row.itemdescription.toString() : '' // Handle null values
+      OrderNr: row.ordernr ? row.ordernr.toString() : '',
+      ItemNumber: row.itemnumber ? row.itemnumber.toString() : '',
+      ItemDescription: row.itemdescription ? row.itemdescription.toString() : '',
+      SmallText: row.smalltext ? row.smalltext.toString() : '',
+      PickAreaNr: row.pickareanr ? row.pickareanr.toString() : '',
+      PickAreaName: row.pickareaname ? row.pickareaname.toString() : '',
+      PlantDate: row.plantdate ? row.plantdate.toISOString().split('T')[0] : '' // Handle null values
       }));
       res.json(data);
     }
